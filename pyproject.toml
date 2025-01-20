@@ -1,0 +1,13 @@
+[project]
+name = "text2diff"
+version = "0.1.0"
+description = "自然语言修订文本生成diff数据"
+authors = [
+    {name = "WangKenwill", email = "kenwillwang@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "ell-ai[all]",
+    "gradio"
+]
