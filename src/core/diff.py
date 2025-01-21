@@ -263,19 +263,40 @@ def split_text_by_sentences(text: str) -> List[Tuple[int, str]]:
     Returns:
         List[Tuple[int, str]]: 每句的起始位置和内容
     """
-    # 正则表达式：匹配完整句子，点号后必须是空白或结束
-    # separator_pattern = r'[^。！？!?]+?(?:\.(?=\s|$)|[。！？!?])[\s]*'
-    # 暂时用到这里。，现在就用例5没过，.和"同时在的时候会有问题
-    # separator_pattern = r'[^。！？!?]+?(?:\.(?=\s|$|[\'"]\s)|[。！？!?])[\s]*'
-    separator_pattern = r'[^。！？!?]+?(?:\.(?=\s|$|[\'"]\s*)|[。！？!?])[\s]*'
+    separator_pattern = re.compile(r"""
+    # 核心内容：匹配非终止符部分（直到遇到终止符）
+    [^。！？!?]+?                # 排除终止符，但允许句点（用于处理版本号等）
+    # 终止符部分（支持连续多个终止符）
+    (?:
+        \. (?= \s | $ | ['"]\s )   # 句点需后接空格/结尾/引号+空格（避免误伤版本号）
+      | [。！？!?]+               # 允许连续多个终止符（如 "??"、"!！"）
+    )
+    # 可选的后置引号及其后续空白（支持引号后直接结束或跟空格）
+    (?: ['"] (?:\s|$))?
+    # 捕获剩余的空白（确保分割位置准确）
+    \s*                           
+""", re.VERBOSE)
 
     matches = re.finditer(separator_pattern, text)
     result = []
-    
+ 
+
+    start = 0
     for match in matches:
-        chunk = match.group()
-        if chunk:  # 确保不添加空字符串
-            result.append((match.start(), chunk))
+        end = match.end()
+        chunk = text[start:end]
+        if chunk:
+            result.append((start, chunk))
+            start = end
+
+    # 处理无匹配的情况
+    if not result:
+        return [(0, text)]
+
+    # 处理末尾残留字符
+    if start < len(text):
+        result.append((start, text[start:]))
+
     
     return result
 
@@ -309,7 +330,7 @@ def test_sentence_splitter():
         # 5. 带引号的对话
         (
             'He said "Hello." She replied "Hi!"',
-            [(0, 'He said "Hello." '), (16, 'She replied "Hi!"')]
+            [(0, 'He said "Hello." '), (17, 'She replied "Hi!"')]
         ),
         
         # 6. 版本号
@@ -322,6 +343,12 @@ def test_sentence_splitter():
         (
             "Hello世界。This是test.com网站。Good!",
             [(0, "Hello世界。"), (8, "This是test.com网站。"), (24, "Good!")]
+        ),
+
+        # 8. 有不能成句的残留部分
+        (
+            "第一句!！第二句??第三句。",
+            [(0, '第一句!！'), (5, '第二句??'), (10, '第三句。')]
         )
     ]
 
@@ -369,23 +396,23 @@ def test_sentence_splitter():
 
 if __name__ == "__main__":
 
-    # 原文示例
-    text = """AI正在深刻改变我们的世界。从医疗诊断到自动驾驶，AI技术正在各个领域发挥重要作用。
-在医疗领域，AI可以帮助医生更准确地诊断疾病。在交通领域，自动驾驶技术有望减少交通事故。
-然而，AI的发展也带来了一些挑战。我们需要确保AI的使用是负责任的，符合伦理规范。
-专家们认为，AI应该服务于人类，而不是取代人类。未来，AI将与人类协同工作，创造更美好的世界。"""
+#     # 原文示例
+#     text = """AI正在深刻改变我们的世界。从医疗诊断到自动驾驶，AI技术正在各个领域发挥重要作用。
+# 在医疗领域，AI可以帮助医生更准确地诊断疾病。在交通领域，自动驾驶技术有望减少交通事故。
+# 然而，AI的发展也带来了一些挑战。我们需要确保AI的使用是负责任的，符合伦理规范。
+# 专家们认为，AI应该服务于人类，而不是取代人类。未来，AI将与人类协同工作，创造更美好的世界。"""
 
 
-    replacements = text2diff(text, """
-    1. 把"我们的"改成"大家的"
-    2. 在"医疗诊断"前添加"先进的"
-    3. 在"交通事故"后添加"，提高道路安全"
-    4. 删除"一些"
-    """)
+#     replacements = text2diff(text, """
+#     1. 把"我们的"改成"大家的"
+#     2. 在"医疗诊断"前添加"先进的"
+#     3. 在"交通事故"后添加"，提高道路安全"
+#     4. 删除"一些"
+#     """)
 
-    print(f"\n{replacements}")
+#     print(f"\n{replacements}")
 
-    revision = apply_diff(text, replacements)
-    print(f"\n{revision}")
+#     revision = apply_diff(text, replacements)
+#     print(f"\n{revision}")
 
-    # test_sentence_splitter()
+    test_sentence_splitter()
