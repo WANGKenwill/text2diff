@@ -5,4 +5,3 @@ This project uses the following third-party libraries:
 |--------|---------|-------------------------|--------------------------------------|
 | ell-ai | 0.0.15  | MIT License             | https://docs.ell.so                  |
 | gradio | 5.1.0   | Apache Software License | https://github.com/gradio-app/gradio |
-| toml   | 0.10.2  | MIT License             | https://github.com/uiri/toml         |

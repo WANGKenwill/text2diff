@@ -9,6 +9,10 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "ell-ai[all]",
-    "gradio",
-    "toml"
+    "gradio"
+]
+[project.optional-dependencies]
+dev = [
+    "toml",       
+    "pytest"      
 ]
