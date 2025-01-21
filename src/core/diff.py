@@ -121,7 +121,8 @@ def text2diff_llm(text_with_pos:str, revision_text:str):
 
 注意：
 1. 严格使用标记符中的数字作为start值，不要计算
-2. 位置标记符不是文本内容的一部分，不要将其包含在original中
+2. 从目标文本往前追溯start标记符，不要往后找
+3. 位置标记符不是文本内容的一部分，不要将其包含在original中
 """
     return f"现在请处理以下内容：\n原文：\n{text_with_pos}\n修改建议：\n{revision_text}"
 
@@ -396,23 +397,23 @@ def test_sentence_splitter():
 
 if __name__ == "__main__":
 
-#     # 原文示例
-#     text = """AI正在深刻改变我们的世界。从医疗诊断到自动驾驶，AI技术正在各个领域发挥重要作用。
-# 在医疗领域，AI可以帮助医生更准确地诊断疾病。在交通领域，自动驾驶技术有望减少交通事故。
-# 然而，AI的发展也带来了一些挑战。我们需要确保AI的使用是负责任的，符合伦理规范。
-# 专家们认为，AI应该服务于人类，而不是取代人类。未来，AI将与人类协同工作，创造更美好的世界。"""
+    # 原文示例
+    text = """AI正在深刻改变我们的世界。从医疗诊断到自动驾驶，AI技术正在各个领域发挥重要作用。
+在医疗领域，AI可以帮助医生更准确地诊断疾病。在交通领域，自动驾驶技术有望减少交通事故。
+然而，AI的发展也带来了一些挑战。我们需要确保AI的使用是负责任的，符合伦理规范。
+专家们认为，AI应该服务于人类，而不是取代人类。未来，AI将与人类协同工作，创造更美好的世界。"""
 
 
-#     replacements = text2diff(text, """
-#     1. 把"我们的"改成"大家的"
-#     2. 在"医疗诊断"前添加"先进的"
-#     3. 在"交通事故"后添加"，提高道路安全"
-#     4. 删除"一些"
-#     """)
+    replacements = text2diff(text, """
+    1. 把"我们的"改成"大家的"
+    2. 在"医疗诊断"前添加"先进的"
+    3. 在"交通事故"后添加"，提高道路安全"
+    4. 删除"一些"
+    """)
 
-#     print(f"\n{replacements}")
+    print(f"\n{replacements}")
 
-#     revision = apply_diff(text, replacements)
-#     print(f"\n{revision}")
+    revision = apply_diff(text, replacements)
+    print(f"\n{revision}")
 
-    test_sentence_splitter()
+    # test_sentence_splitter()
