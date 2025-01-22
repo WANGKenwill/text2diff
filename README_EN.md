@@ -7,6 +7,8 @@ A tool that leverages LLM capabilities to convert natural language descriptions 
 - This project is experimental. Suggestions and code contributions are welcome!
 - Core functionality: Modify text through natural language descriptions and visualize the differences before and after modification.
 
+![alt text](img/intro_en.png)
+
 ## Features
 - Modify text using natural language descriptions, making it more convenient than manual editing and more accessible than writing code.
 - Interactive web interface built with Gradio, allowing preview and confirmation of modifications.

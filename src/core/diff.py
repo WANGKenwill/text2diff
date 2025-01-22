@@ -42,10 +42,8 @@ def text2diff_llm(text_with_pos:str, revision_text:str):
     {
 
       "sentence_start": <使用original内容往前追溯的最近一个位置标记符里的数字>,
-      "original": <需要修改的原文>,
+      "original": <需要修改的原文，不能为空字符串，因为需要利用原文定位>,
       "content": <修改后的内容>
-
-
     }
 ]
 
@@ -146,13 +144,43 @@ def diff2html(origin_text: str, replacements: List[Tuple[int, int, str]]) -> str
         if current_pos < start:
             html_lines.append(origin_text[current_pos:start])
         
-        # 添加修改部分
+        # 获取原始文本
         original = origin_text[start:end]
-        html_lines.append(
-            f"<span style='color:red;text-decoration:line-through'>{original}</span>"
-            f" → "
-            f"<span style='color:green;font-weight:bold'>{content}</span>"
-        )
+        
+        # 判断修改类型
+        if not content:  # 删除
+            html_lines.append(
+                f"<span style='color:red;text-decoration:line-through'>{original}</span>"
+            )
+        elif start == end:  # 新增
+            html_lines.append(
+                f"<span style='color:green;font-weight:bold'>{content}</span>"
+            )
+        elif original in content:  # 修改（包含原文）
+            # 找到原文在 new_content 中的位置
+            original_start = content.find(original)
+            original_end = original_start + len(original)
+            
+            # 添加新增部分（绿色）
+            if original_start > 0:
+                html_lines.append(
+                    f"<span style='color:green;font-weight:bold'>{content[:original_start]}</span>"
+                )
+            
+            # 添加原文部分（原格式）
+            html_lines.append(original)
+            
+            # 添加新增部分（绿色）
+            if original_end < len(content):
+                html_lines.append(
+                    f"<span style='color:green;font-weight:bold'>{content[original_end:]}</span>"
+                )
+        else:  # 完全修改
+            html_lines.append(
+                f"<span style='color:red;text-decoration:line-through'>{original}</span>"
+                f" → "
+                f"<span style='color:green;font-weight:bold'>{content}</span>"
+            )
         
         current_pos = end
     

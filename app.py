@@ -23,7 +23,22 @@ examples = [
 2. 在"医疗诊断"前添加"先进的"
 3. 在"交通事故"后添加"，提高道路安全"
 4. 删除"一些"
-"""]
+"""],
+    [
+        """AI is profoundly changing our world. 
+From medical diagnosis to autonomous driving, AI technology is playing an important role in various fields.
+In the medical field, AI can help doctors diagnose diseases more accurately. 
+In the transportation field, autonomous driving technology has the potential to reduce traffic accidents.
+However, the development of AI also brings some challenges. 
+We need to ensure that the use of AI is responsible and complies with ethical standards.
+Experts believe that AI should serve humanity, not replace it. 
+In the future, AI will work collaboratively with humans to create a better world.""",
+        """1. Change "our" to "the"
+2. Add "advanced" before "medical diagnosis"
+3. Add ", improving road safety" after "traffic accidents"
+4. Delete "some"
+"""
+    ]
     ]
 
 with gr.Blocks() as demo:
